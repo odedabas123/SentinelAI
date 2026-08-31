@@ -40,10 +40,14 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
 
-    # Allow our local dashboard
+    # A comma-separated origin list supports both local and hosted frontends.
     allow_origins=[
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
+        origin.strip()
+        for origin in os.getenv(
+            "CORS_ORIGINS",
+            "http://localhost:3000,http://127.0.0.1:3000",
+        ).split(",")
+        if origin.strip()
     ],
 
     allow_credentials=True,

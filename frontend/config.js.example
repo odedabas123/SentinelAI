@@ -1,0 +1,2 @@
+// Copy this file to config.js for a separately hosted dashboard.
+window.SENTINEL_API_URL = "http://localhost:8002";

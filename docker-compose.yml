@@ -29,13 +29,19 @@ services:
     working_dir: /app/services/order-service
 
     command:
-      uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+      uvicorn main:app --host 0.0.0.0 --port 8000
 
     ports:
       - "8000:8000"
 
     environment:
-      PAYMENT_SERVICE_URL: http://payment-service:8001
+      PAYMENT_SERVICE_URL: ${PAYMENT_SERVICE_URL:-http://payment-service:8001}
+      DATABASE_URL: ${DATABASE_URL:-}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: sentinelai
+      POSTGRES_USER: sentinelai
+      POSTGRES_PASSWORD: sentinelai
 
     volumes:
       - .:/app
@@ -61,13 +67,21 @@ services:
     working_dir: /app/services/payment-service
 
     command:
-      uvicorn main:app --host 0.0.0.0 --port 8001 --reload
+      uvicorn main:app --host 0.0.0.0 --port 8001
 
     ports:
       - "8001:8001"
 
     volumes:
       - .:/app
+
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: sentinelai
+      POSTGRES_USER: sentinelai
+      POSTGRES_PASSWORD: sentinelai
 
     depends_on:
       postgres:
@@ -88,19 +102,21 @@ services:
     working_dir: /app/services/sentinel-api
 
     command:
-      uvicorn main:app --host 0.0.0.0 --port 8002 --reload
+      uvicorn main:app --host 0.0.0.0 --port 8002
 
     ports:
       - "8002:8002"
 
     environment:
-      ORDER_SERVICE_URL: http://order-service:8000
-      PAYMENT_SERVICE_URL: http://payment-service:8001
+      ORDER_SERVICE_URL: ${ORDER_SERVICE_URL:-http://order-service:8000}
+      PAYMENT_SERVICE_URL: ${PAYMENT_SERVICE_URL:-http://payment-service:8001}
+      DATABASE_URL: ${DATABASE_URL:-}
       POSTGRES_HOST: postgres
       POSTGRES_PORT: 5432
       POSTGRES_DB: sentinelai
       POSTGRES_USER: sentinelai
       POSTGRES_PASSWORD: sentinelai
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000,http://127.0.0.1:3000}
 
     volumes:
       - .:/app
@@ -139,6 +155,7 @@ services:
       POSTGRES_DB: sentinelai
       POSTGRES_USER: sentinelai
       POSTGRES_PASSWORD: sentinelai
+      DATABASE_URL: ${DATABASE_URL:-}
       ALERT_WEBHOOK_URL: ${ALERT_WEBHOOK_URL:-}
       ALERT_RECOVERY_ENABLED: ${ALERT_RECOVERY_ENABLED:-false}
       ALERT_WEBHOOK_TIMEOUT_SECONDS: ${ALERT_WEBHOOK_TIMEOUT_SECONDS:-5}
@@ -150,7 +167,7 @@ services:
         condition: service_healthy
 
     healthcheck:
-      test: ["CMD-SHELL", "ps -ef | grep -q 'python -u live_monitor.py' || exit 1"]
+      test: ["CMD-SHELL", "python3 -c \"import sys; sys.exit(0 if b'live_monitor.py' in open('/proc/1/cmdline', 'rb').read() else 1)\""]
       interval: 15s
       timeout: 5s
       retries: 5
@@ -164,13 +181,21 @@ services:
     working_dir: /app/frontend
 
     command:
-      python -m http.server 3000 --bind 0.0.0.0
+      - /bin/sh
+      - -c
+      - >-
+        printf 'window.SENTINEL_API_URL = "%s";\n'
+        "${FRONTEND_SENTINEL_API_URL:-http://localhost:8002}" > config.js
+        && python -m http.server 3000 --bind 0.0.0.0
 
     ports:
       - "3000:3000"
 
     volumes:
       - .:/app
+
+    environment:
+      FRONTEND_SENTINEL_API_URL: ${FRONTEND_SENTINEL_API_URL:-http://localhost:8002}
 
     depends_on:
       sentinel-api:

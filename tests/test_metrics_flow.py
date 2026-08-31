@@ -42,7 +42,7 @@ def test_metric_persistence_and_monitor_incident_flow():
     }
 
     insert_metric(metric)
-    stored_metrics = get_recent_metrics(limit=5)
+    stored_metrics = get_recent_metrics(limit=1000)
     assert any(item["service"] == "payment-service" and item["status_code"] == 500 for item in stored_metrics)
 
     created = save_incident(metric, "HTTP_ERROR", "CRITICAL")

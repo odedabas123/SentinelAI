@@ -68,6 +68,29 @@ The harness generates seeded NORMAL, SLOW, and FAILURE request windows in memory
 - Healthy traffic resolves that incident automatically.
 - The dashboard shows active incidents and incident history separately.
 
+## Portfolio deployment
+
+The simplest realistic public setup is one managed PostgreSQL database, three small web services for `order-service`, `payment-service`, and `sentinel-api`, one background worker for `live-monitor`, and a static frontend host. Render, Railway, or a similar platform can provide the web services, worker, and managed database without introducing Kubernetes.
+
+For hosted services, set these environment variables in each service:
+
+- `DATABASE_URL` — the managed PostgreSQL connection string
+- `ORDER_SERVICE_URL` — the reachable order-service URL for `sentinel-api`
+- `PAYMENT_SERVICE_URL` — the reachable payment-service URL for order-service and `sentinel-api`
+- `CORS_ORIGINS` — the exact public frontend origin, such as `https://sentinel-demo.example.com`
+- `ALERT_WEBHOOK_URL`, `ALERT_RECOVERY_ENABLED`, and `ALERT_WEBHOOK_TIMEOUT_SECONDS` for the worker when notifications are desired
+
+Run the Python services with their production commands:
+
+```bash
+uvicorn main:app --host 0.0.0.0 --port $PORT
+python -u live_monitor.py
+```
+
+For a separately hosted frontend, copy `frontend/config.js.example` to `frontend/config.js`, set `window.SENTINEL_API_URL` to the public `sentinel-api` URL, and publish the `frontend` directory as static files. The local workflow remains `docker compose up --build -d`; Compose supplies local defaults and generates `frontend/config.js` automatically.
+
+Do not commit `.env`, `frontend/config.js`, database credentials, or runtime JSONL files. Configure secrets in the hosting provider instead.
+
 ## Core project files
 
 - `services/payment-service/main.py` — payment service behavior and metrics
@@ -88,7 +111,5 @@ The harness generates seeded NORMAL, SLOW, and FAILURE request windows in memory
 
 ## Next steps
 
-- add PostgreSQL persistence
-- expand ML features beyond latency-based detection
-- add alert integrations and CI/CD
-- deploy publicly for a stronger portfolio demo
+- configure a public hosting provider using the deployment steps above
+- connect a webhook destination for portfolio demonstrations

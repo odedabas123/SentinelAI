@@ -2,14 +2,18 @@
 // SENTINELAI API URLS
 // ==========================================
 
+const SENTINEL_API_BASE_URL =
+    window.SENTINEL_API_URL ||
+    `${window.location.protocol}//${window.location.hostname}:8002`;
+
 const ANOMALIES_API_URL =
-    "http://localhost:8002/api/anomalies";
+    `${SENTINEL_API_BASE_URL}/api/anomalies`;
 
 const SERVICES_API_URL =
-    "http://localhost:8002/api/services";
+    `${SENTINEL_API_BASE_URL}/api/services`;
 
 const METRICS_API_URL =
-    "http://localhost:8002/api/metrics";
+    `${SENTINEL_API_BASE_URL}/api/metrics`;
 
 
 // ==========================================

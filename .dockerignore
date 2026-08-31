@@ -3,3 +3,13 @@ __pycache__
 *.pyc
 .git
 .gitignore
+.env
+.env.*
+!.env.example
+frontend/config.js
+services/order-service/metrics.jsonl
+services/payment-service/metrics.jsonl
+ml/data/anomalies.jsonl
+.pytest_cache
+.venv
+venv

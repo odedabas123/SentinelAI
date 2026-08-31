@@ -1,6 +1,9 @@
 # Use a small official Python image
 FROM python:3.12-slim
 
+ENV PYTHONDONTWRITEBYTECODE=1 \
+	PYTHONUNBUFFERED=1
+
 # All SentinelAI files will live inside /app
 WORKDIR /app
 
