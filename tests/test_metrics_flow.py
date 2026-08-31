@@ -1,5 +1,6 @@
 import importlib.util
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 from fastapi.testclient import TestClient
@@ -30,8 +31,10 @@ def test_metric_persistence_and_monitor_incident_flow():
     init_metrics_table()
     init_incidents_table()
 
+    timestamp = datetime.now(timezone.utc).isoformat()
+
     metric = {
-        "timestamp": "2026-08-31T12:00:00Z",
+        "timestamp": timestamp,
         "service": "payment-service",
         "method": "POST",
         "path": "/payments",
