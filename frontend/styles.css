@@ -1,0 +1,576 @@
+/* ============================== */
+/* GLOBAL                         */
+/* ============================== */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: #0b1020;
+    color: #e5e7eb;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    min-height: 100vh;
+}
+
+.dashboard {
+    max-width: 1200px;
+
+    margin: 0 auto;
+
+    padding: 32px;
+}
+
+
+/* ============================== */
+/* HEADER                         */
+/* ============================== */
+
+.topbar {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 32px;
+}
+
+.topbar h1 {
+    font-size: 32px;
+
+    margin-bottom: 6px;
+}
+
+.subtitle {
+    color: #94a3b8;
+
+    font-size: 14px;
+}
+
+.live-status {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    background: #111827;
+
+    border: 1px solid #1f2937;
+
+    border-radius: 999px;
+
+    padding: 8px 12px;
+
+    font-size: 13px;
+
+    font-weight: bold;
+}
+
+.live-dot {
+    width: 10px;
+
+    height: 10px;
+
+    border-radius: 50%;
+
+    background: #22c55e;
+}
+
+
+/* ============================== */
+/* SUMMARY CARDS                  */
+/* ============================== */
+
+.stats-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 18px;
+
+    margin-bottom: 32px;
+}
+
+.stat-card {
+    background: #111827;
+
+    border: 1px solid #1f2937;
+
+    border-radius: 14px;
+
+    padding: 22px;
+}
+
+.stat-label {
+    color: #94a3b8;
+
+    font-size: 13px;
+
+    margin-bottom: 10px;
+}
+
+.stat-card h2 {
+    font-size: 28px;
+}
+
+.status-healthy {
+    color: #22c55e;
+}
+
+.status-warning {
+    color: #f97316;
+}
+
+.status-danger {
+    color: #ef4444;
+}
+
+
+/* ============================== */
+/* SHARED SECTION STYLES          */
+/* ============================== */
+
+.services-section,
+.incidents-section,
+.metrics-section {
+    background: #111827;
+
+    border: 1px solid #1f2937;
+
+    border-radius: 14px;
+
+    padding: 24px;
+
+    margin-bottom: 28px;
+}
+
+.section-header {
+    margin-bottom: 22px;
+}
+
+.section-header h2 {
+    font-size: 20px;
+
+    margin-bottom: 6px;
+}
+
+.section-header p {
+    color: #94a3b8;
+
+    font-size: 13px;
+}
+
+
+/* ============================== */
+/* SERVICE HEALTH                 */
+/* ============================== */
+
+.services-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 16px;
+}
+
+.service-card {
+    background: #0f172a;
+
+    border: 1px solid #1f2937;
+
+    border-radius: 12px;
+
+    padding: 18px;
+}
+
+.service-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+}
+
+.service-name {
+    font-size: 16px;
+
+    font-weight: bold;
+}
+
+.service-status {
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    font-size: 12px;
+
+    font-weight: bold;
+}
+
+.status-dot {
+    width: 9px;
+
+    height: 9px;
+
+    border-radius: 50%;
+}
+
+
+/* Healthy service */
+.service-healthy .status-dot {
+    background: #22c55e;
+}
+
+.service-healthy .service-status {
+    color: #22c55e;
+}
+
+
+/* Slow service */
+.service-slow {
+    border-color: #92400e;
+}
+
+.service-slow .status-dot {
+    background: #f59e0b;
+}
+
+.service-slow .service-status {
+    color: #f59e0b;
+}
+
+
+/* Failing or down service */
+.service-down {
+    border-color: #7f1d1d;
+}
+
+.service-down .status-dot {
+    background: #ef4444;
+}
+
+.service-down .service-status {
+    color: #ef4444;
+}
+
+
+/* ============================== */
+/* LATENCY GRAPH                  */
+/* ============================== */
+
+.metrics-section {
+    position: relative;
+}
+
+.chart-container {
+    position: relative;
+    height: 360px;
+    width: 100%;
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid #1f2937;
+    border-radius: 12px;
+    padding: 12px;
+}
+
+.latest-metric {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid #1f2937;
+    border-radius: 999px;
+    padding: 8px 12px;
+    color: #cbd5e1;
+    font-size: 12px;
+}
+
+.latest-metric strong {
+    color: #f8fafc;
+    font-size: 16px;
+}
+
+
+/* ============================== */
+/* INCIDENT CARDS                 */
+/* ============================== */
+
+.incident-filters {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(140px, 1fr));
+
+    gap: 12px;
+
+    margin-bottom: 18px;
+}
+
+.filter-group {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 6px;
+}
+
+.filter-group label {
+    color: #94a3b8;
+
+    font-size: 11px;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.04em;
+}
+
+.filter-group select {
+    background: #0f172a;
+
+    color: #e5e7eb;
+
+    border: 1px solid #334155;
+
+    border-radius: 8px;
+
+    padding: 9px 10px;
+
+    font-size: 13px;
+}
+
+.incident-group {
+    margin-bottom: 24px;
+}
+
+.incident-group:last-child {
+    margin-bottom: 0;
+}
+
+.incident-group-title {
+    font-size: 16px;
+
+    margin: 0 0 14px;
+
+    color: #e2e8f0;
+}
+
+.incident-card {
+    background: #0f172a;
+
+    border: 1px solid #7f1d1d;
+
+    border-radius: 12px;
+
+    padding: 18px;
+
+    margin-bottom: 14px;
+}
+
+.incident-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 14px;
+}
+
+.incident-service {
+    font-size: 16px;
+
+    font-weight: bold;
+}
+
+.incident-badges {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    flex-wrap: wrap;
+}
+
+.incident-badge {
+    background: #450a0a;
+
+    color: #fca5a5;
+
+    border: 1px solid #7f1d1d;
+
+    border-radius: 999px;
+
+    padding: 5px 10px;
+
+    font-size: 11px;
+
+    font-weight: bold;
+}
+
+.lifecycle-active {
+    background: rgba(34, 197, 94, 0.12);
+
+    border-color: #22c55e;
+
+    color: #86efac;
+}
+
+.lifecycle-resolved {
+    background: rgba(59, 130, 246, 0.12);
+
+    border-color: #60a5fa;
+
+    color: #bfdbfe;
+}
+
+.lifecycle-legacy {
+    background: rgba(148, 163, 184, 0.12);
+
+    border-color: #64748b;
+
+    color: #cbd5e1;
+}
+
+.incident-details {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 14px;
+}
+
+.detail-item {
+    background: #111827;
+
+    border-radius: 8px;
+
+    padding: 12px;
+}
+
+.detail-label {
+    display: block;
+
+    color: #64748b;
+
+    font-size: 11px;
+
+    margin-bottom: 4px;
+}
+
+.detail-value {
+    font-size: 13px;
+
+    color: #e5e7eb;
+}
+
+.latency-value {
+    color: #f87171;
+
+    font-weight: bold;
+}
+
+
+/* ============================== */
+/* EMPTY STATE                    */
+/* ============================== */
+
+.empty-state {
+    text-align: center;
+
+    padding: 40px;
+
+    color: #64748b;
+
+    border: 1px dashed #334155;
+
+    border-radius: 10px;
+}
+
+
+/* ============================== */
+/* RESPONSIVE                     */
+/* ============================== */
+
+@media (max-width: 800px) {
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .services-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .incident-filters {
+        grid-template-columns: 1fr;
+    }
+
+    .incident-details {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+    .dashboard {
+        padding: 20px;
+    }
+}
+/* ============================== */
+/* INCIDENT TYPE + SEVERITY       */
+/* ============================== */
+
+/* Small description under the service name */
+.incident-type {
+    color: #94a3b8;
+
+    font-size: 12px;
+
+    margin-top: 5px;
+}
+
+
+/* High severity latency incident */
+.severity-high {
+    background: #451a03;
+
+    color: #fdba74;
+
+    border-color: #9a3412;
+}
+
+
+/* Critical HTTP failure */
+.severity-critical {
+    background: #450a0a;
+
+    color: #fca5a5;
+
+    border-color: #991b1b;
+}
+
+.severity-medium {
+    background: #3f2d14;
+
+    color: #fcd34d;
+
+    border-color: #d97706;
+}
+
+.small-empty-state {
+    padding: 18px 22px;
+
+    margin-bottom: 0;
+}

@@ -1,0 +1,187 @@
+services:
+
+  postgres:
+    image: postgres:16-alpine
+
+    environment:
+      POSTGRES_DB: sentinelai
+      POSTGRES_USER: sentinelai
+      POSTGRES_PASSWORD: sentinelai
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sentinelai -d sentinelai"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+
+  # Order Service
+  order-service:
+    build: .
+
+    working_dir: /app/services/order-service
+
+    command:
+      uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+    ports:
+      - "8000:8000"
+
+    environment:
+      PAYMENT_SERVICE_URL: http://payment-service:8001
+
+    volumes:
+      - .:/app
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+      payment-service:
+        condition: service_healthy
+
+    healthcheck:
+      test: ["CMD-SHELL", "python3 -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=2)\""]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+
+  # Payment Service
+  payment-service:
+    build: .
+
+    working_dir: /app/services/payment-service
+
+    command:
+      uvicorn main:app --host 0.0.0.0 --port 8001 --reload
+
+    ports:
+      - "8001:8001"
+
+    volumes:
+      - .:/app
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    healthcheck:
+      test: ["CMD-SHELL", "python3 -c \"import urllib.request; urllib.request.urlopen('http://localhost:8001/health', timeout=2)\""]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+
+  # SentinelAI backend API
+  sentinel-api:
+    build: .
+
+    working_dir: /app/services/sentinel-api
+
+    command:
+      uvicorn main:app --host 0.0.0.0 --port 8002 --reload
+
+    ports:
+      - "8002:8002"
+
+    environment:
+      ORDER_SERVICE_URL: http://order-service:8000
+      PAYMENT_SERVICE_URL: http://payment-service:8001
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: sentinelai
+      POSTGRES_USER: sentinelai
+      POSTGRES_PASSWORD: sentinelai
+
+    volumes:
+      - .:/app
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+      order-service:
+        condition: service_healthy
+      payment-service:
+        condition: service_healthy
+
+    healthcheck:
+      test: ["CMD-SHELL", "python3 -c \"import urllib.request; urllib.request.urlopen('http://localhost:8002/health', timeout=2)\""]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+
+  # ML live monitor
+  live-monitor:
+    build: .
+
+    working_dir: /app/ml
+
+    command:
+       python -u live_monitor.py
+
+    volumes:
+      - .:/app
+
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: sentinelai
+      POSTGRES_USER: sentinelai
+      POSTGRES_PASSWORD: sentinelai
+      ALERT_WEBHOOK_URL: ${ALERT_WEBHOOK_URL:-}
+      ALERT_RECOVERY_ENABLED: ${ALERT_RECOVERY_ENABLED:-false}
+      ALERT_WEBHOOK_TIMEOUT_SECONDS: ${ALERT_WEBHOOK_TIMEOUT_SECONDS:-5}
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+      payment-service:
+        condition: service_healthy
+
+    healthcheck:
+      test: ["CMD-SHELL", "ps -ef | grep -q 'python -u live_monitor.py' || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+
+  # Frontend dashboard
+  frontend:
+    build: .
+
+    working_dir: /app/frontend
+
+    command:
+      python -m http.server 3000 --bind 0.0.0.0
+
+    ports:
+      - "3000:3000"
+
+    volumes:
+      - .:/app
+
+    depends_on:
+      sentinel-api:
+        condition: service_healthy
+
+    healthcheck:
+      test: ["CMD-SHELL", "python3 -c \"import urllib.request; urllib.request.urlopen('http://localhost:3000', timeout=2)\""]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  postgres_data:

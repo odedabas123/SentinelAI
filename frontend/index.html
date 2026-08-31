@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Basic page settings -->
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>SentinelAI Dashboard</title>
+
+    <!-- Our dashboard CSS -->
+    <link
+        rel="stylesheet"
+        href="styles.css"
+    >
+
+    <!--
+        Chart.js draws the live latency graph.
+
+        We use a library here instead of manually
+        drawing every graph point ourselves.
+    -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+    <div class="dashboard">
+
+        <!-- ================================= -->
+        <!-- HEADER                            -->
+        <!-- ================================= -->
+
+        <header class="topbar">
+
+            <div>
+
+                <h1>
+                    SentinelAI
+                </h1>
+
+                <p class="subtitle">
+                    AI-Powered Service Monitoring
+                </p>
+
+            </div>
+
+
+            <div class="live-status">
+
+                <span class="live-dot"></span>
+
+                <span>
+                    LIVE
+                </span>
+
+            </div>
+
+        </header>
+
+
+        <!-- ================================= -->
+        <!-- SUMMARY CARDS                     -->
+        <!-- ================================= -->
+
+        <section class="stats-grid">
+
+            <div class="stat-card">
+
+                <p class="stat-label">
+                    Monitored Services
+                </p>
+
+                <h2 id="service-count">
+                    0
+                </h2>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <p class="stat-label">
+                    Detected Incidents
+                </p>
+
+                <h2 id="incident-count">
+                    0
+                </h2>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <p class="stat-label">
+                    Current Status
+                </p>
+
+                <h2
+                    id="system-status"
+                    class="status-healthy"
+                >
+                    CHECKING
+                </h2>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================================= -->
+        <!-- SERVICE HEALTH                    -->
+        <!-- ================================= -->
+
+        <section class="services-section">
+
+            <div class="section-header">
+
+                <div>
+
+                    <h2>
+                        Service Health
+                    </h2>
+
+                    <p>
+                        Current status of monitored services
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="services-container"
+                class="services-grid"
+            >
+
+                <div class="empty-state">
+
+                    <p>
+                        Checking services...
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================================= -->
+        <!-- LIVE LATENCY GRAPH                -->
+        <!-- ================================= -->
+
+        <section class="metrics-section">
+
+            <div class="section-header">
+
+                <div>
+
+                    <h2>
+                        Payment Service Latency
+                    </h2>
+
+                    <p>
+                        Live response-time history from recent requests
+                    </p>
+
+                </div>
+
+
+                <!-- Latest measured latency -->
+                <div class="latest-metric">
+
+                    <span>
+                        Latest
+                    </span>
+
+                    <strong id="latest-latency">
+                        --
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!--
+                Chart.js draws the graph
+                inside this canvas.
+            -->
+            <div class="chart-container">
+
+                <canvas id="latency-chart"></canvas>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================================= -->
+        <!-- INCIDENTS                         -->
+        <!-- ================================= -->
+
+        <section class="incidents-section">
+
+            <div class="section-header">
+
+                <div>
+
+                    <h2>
+                        Active Incidents &amp; History
+                    </h2>
+
+                    <p>
+                        Current unresolved issues and recent resolved events
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div id="incident-filters" class="incident-filters">
+
+                <div class="filter-group">
+
+                    <label for="incident-status-filter">
+                        Status
+                    </label>
+
+                    <select id="incident-status-filter">
+                        <option value="all">All</option>
+                        <option value="ACTIVE">Active</option>
+                        <option value="RESOLVED">Resolved</option>
+                        <option value="LEGACY">Legacy</option>
+                    </select>
+
+                </div>
+
+                <div class="filter-group">
+
+                    <label for="incident-severity-filter">
+                        Severity
+                    </label>
+
+                    <select id="incident-severity-filter">
+                        <option value="all">All</option>
+                    </select>
+
+                </div>
+
+                <div class="filter-group">
+
+                    <label for="incident-service-filter">
+                        Service
+                    </label>
+
+                    <select id="incident-service-filter">
+                        <option value="all">All</option>
+                    </select>
+
+                </div>
+
+                <div class="filter-group">
+
+                    <label for="incident-type-filter">
+                        Type
+                    </label>
+
+                    <select id="incident-type-filter">
+                        <option value="all">All</option>
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div id="incidents-container">
+
+                <div class="empty-state">
+
+                    <p>
+                        Loading incidents...
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+
+    <!-- Our dashboard JavaScript -->
+    <script src="app.js"></script>
+
+</body>
+
+</html>

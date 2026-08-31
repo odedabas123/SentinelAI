@@ -1,0 +1,28 @@
+# Environment variables / secrets
+.env
+.env.local
+
+# Python virtual environments
+.venv/
+venv/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+
+# Pytest / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Runtime metric and incident data
+services/order-service/metrics.jsonl
+services/payment-service/metrics.jsonl
+ml/data/anomalies.jsonl
+
+# Local PostgreSQL data, if created
+postgres_data/
+
+# IDE / OS files
+.DS_Store
+Thumbs.db
